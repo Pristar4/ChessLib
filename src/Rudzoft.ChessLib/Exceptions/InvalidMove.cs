@@ -41,6 +41,7 @@ public sealed class InvalidMove : InvalidOperationException
     public InvalidMove(string message, Exception innerException)
         : base(message, innerException) { }
 
+    [Obsolete("Obsolete")]
     public InvalidMove(SerializationInfo info, StreamingContext context)
         : base(info, context) { }
 }

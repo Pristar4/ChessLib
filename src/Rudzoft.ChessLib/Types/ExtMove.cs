@@ -69,9 +69,9 @@ public struct ExtMove : IEquatable<ExtMove>, IComparable<ExtMove>
     public override bool Equals(object obj)
         => obj is ExtMove other && Equals(other);
 
-    public readonly override int GetHashCode()
+    public override readonly int GetHashCode()
         => Move.GetHashCode();
 
-    public readonly override string ToString()
+    public override readonly string ToString()
         => $"{Move}, {Score}";
 }

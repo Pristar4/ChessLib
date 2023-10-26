@@ -7,8 +7,8 @@
     <IsWindows Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">true</IsWindows>
     <IsOSX Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">true</IsOSX>
     <IsLinux Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">true</IsLinux>
-    <TargetFramework>net6.0</TargetFramework>
-    <PackageVersion>0.0.3</PackageVersion>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageVersion>0.0.3-pre</PackageVersion>
     <Authors>Rudy Alex Kohn</Authors>
     <Company>None</Company>
     <Version>0.0.3</Version>
@@ -30,7 +30,6 @@
     <RepositoryType>git</RepositoryType>
     <Product>Rudzoft.ChessLib</Product>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(IsWindows)'=='true'">
     <DefineConstants>Windows</DefineConstants>
   </PropertyGroup>
@@ -43,7 +42,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
@@ -54,8 +52,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="6.0.10" />
     <PackageReference Include="ZString" Version="2.4.4" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="8.0.0-rc.2.23480.2" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Protocol\" />
@@ -68,9 +66,9 @@
     </None>
     <None Include="..\..\LICENSE">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath>
+      </PackagePath>
     </None>
     <None Include="Icon\ChessLib.png" Pack="true" PackagePath="" />
   </ItemGroup>
-
 </Project>

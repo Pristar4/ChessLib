@@ -40,6 +40,7 @@ public sealed class InvalidFen : ArgumentException
     public InvalidFen(string message, Exception innerException)
         : base(message, innerException) { }
 
+    [Obsolete("Obsolete")]
     public InvalidFen(SerializationInfo info, StreamingContext context)
         : base(info, context) { }
 }

@@ -78,9 +78,9 @@ public struct TranspositionTableEntry
     private readonly bool Equals(TranspositionTableEntry other)
         => Key32 == other.Key32 && Generation == other.Generation;
 
-    public readonly override bool Equals(object obj)
+    public override readonly bool Equals(object obj)
         => obj is TranspositionTableEntry other && Equals(other);
 
-    public readonly override int GetHashCode()
+    public override readonly int GetHashCode()
         => HashCode.Combine(Key32, Move, Depth, Generation, Value, StaticValue, Type);
 }

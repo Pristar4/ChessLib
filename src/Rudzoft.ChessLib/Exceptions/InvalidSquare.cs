@@ -41,6 +41,7 @@ public sealed class InvalidSquare : InvalidOperationException
     public InvalidSquare(string message, Exception innerException)
         : base(message, innerException) { }
 
+    [Obsolete("Obsolete")]
     public InvalidSquare(SerializationInfo info, StreamingContext context)
         : base(info, context) { }
 }

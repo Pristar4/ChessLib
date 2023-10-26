@@ -44,6 +44,7 @@ public sealed class TranspositionTableFailure : ArgumentException
     {
     }
 
+    [Obsolete("Obsolete")]
     public TranspositionTableFailure(
         SerializationInfo info,
         StreamingContext context) : base(info, context)
