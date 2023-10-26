@@ -37,16 +37,14 @@ using System.Linq;
 
 namespace Rudzoft.ChessLib.Protocol.UCI;
 
-public class Uci : IUci
-{
+public class Uci : IUci {
     private static readonly OptionComparer OptionComparer = new();
 
     private static readonly string[] OptionTypeStrings = Enum.GetNames(typeof(UciOptionType));
 
     private readonly ObjectPool<StringBuilder> _pvPool;
 
-    public Uci()
-    {
+    public Uci() {
         var policy = new StringBuilderPooledObjectPolicy();
         _pvPool = new DefaultObjectPool<StringBuilder>(policy, 128);
         O = new Dictionary<string, IOption>();
@@ -68,8 +66,7 @@ public class Uci : IUci
 
     public bool IsDebugModeEnabled { get; set; }
 
-    public void Initialize(int maxThreads = 128)
-    {
+    public void Initialize(int maxThreads = 128) {
         O["Write Debug Log"] = new Option("Write Debug Log", O.Count, false, OnLogger);
         O["Write Search Log"] = new Option("Write Search Log", O.Count, false);
         O["Search Log Filename"] = new Option("Search Log Filename", O.Count);
@@ -81,7 +78,8 @@ public class Uci : IUci
         O["Ponder"] = new Option("Ponder", O.Count, true);
         O["OwnBook"] = new Option("OwnBook", O.Count, false);
         O["MultiPV"] = new Option("MultiPV", O.Count, 1, 1, 500);
-        O["UCI_Chess960"] = new Option("UCI_Chess960", O.Count, false);
+        //TODO: add support for UCI_Chess960 in fen
+        // O["UCI_Chess960"] = new Option("UCI_Chess960", O.Count, false);
     }
 
     public void AddOption(string name, IOption option) => O[name] = option;
@@ -89,24 +87,63 @@ public class Uci : IUci
     public ulong Nps(in ulong nodes, in TimeSpan time)
         => (ulong)(nodes * 1000.0 / time.Milliseconds);
 
-    public Move MoveFromUci(IPosition pos, ReadOnlySpan<char> uciMove)
-    {
+    public Move MoveFromUci(IPosition pos, ReadOnlySpan<char> uciMove) {
         var moveList = pos.GenerateMoves();
-        foreach (var move in moveList.Get())
-            if (uciMove.Equals(move.Move.ToString(), StringComparison.InvariantCultureIgnoreCase))
+
+        foreach (var move in moveList.Get()) {
+            var moveString = move.Move.ToString();
+
+            if (move.Move.IsCastleMove()) {
+                var (from, to) = move.Move;
+                var castleString = "";
+
+                if (move.Move.FromSquare() == Squares.e1) {
+                    castleString = to < from ? "e1c1" : "e1g1";
+                    moveString = castleString;
+                } else if (move.Move.FromSquare() == Squares.e8) {
+                    castleString = to < from ? "e8c8" : "e8g8";
+                    moveString = castleString;
+                }
+            }
+
+            if (uciMove.Equals(moveString, StringComparison.InvariantCultureIgnoreCase))
                 return move.Move;
+        }
 
         return Move.EmptyMove;
     }
 
-    public IEnumerable<Move> MovesFromUci(IPosition pos, Stack<State> states, IEnumerable<string> moves)
-    {
-        var uciMoves = moves
-            .Select(x => MoveFromUci(pos, x))
-            .Where(x => !x.IsNullMove());
 
-        foreach (var move in uciMoves)
-        {
+    // TODO: this is only temporary hack
+    public String MoveToUci(IPosition pos, Move move) {
+
+            var moveString = move.ToString();
+
+            if (move.IsCastleMove()) {
+                var (from, to) = move;
+                var castleString = "";
+
+                if (move.FromSquare() == Squares.e1) {
+                    castleString = to < from ? "e1c1" : "e1g1";
+                    moveString = castleString;
+                } else if (move.FromSquare() == Squares.e8) {
+                    castleString = to < from ? "e8c8" : "e8g8";
+                    moveString = castleString;
+                }
+            }
+
+            return moveString;
+
+    }
+
+
+    public IEnumerable<Move> MovesFromUci(IPosition pos, Stack<State> states,
+                                          IEnumerable<string> moves) {
+        var uciMoves = moves
+                .Select(x => MoveFromUci(pos, x))
+                .Where(x => !x.IsNullMove());
+
+        foreach (var move in uciMoves) {
             var state = new State();
             states.Push(state);
             pos.MakeMove(move, in state);
@@ -123,16 +160,17 @@ public class Uci : IUci
 
     public string BestMove(Move move, Move ponderMove)
         => !ponderMove.IsNullMove()
-            ? $"bestmove {move} ponder {ponderMove}"
-            : $"bestmove {move}";
+                ? $"bestmove {move} ponder {ponderMove}"
+                : $"bestmove {move}";
 
     public string CurrentMoveNum(int moveNumber, Move move, in ulong visitedNodes, in TimeSpan time)
-        => $"info currmovenumber {moveNumber} currmove {move} nodes {visitedNodes} time {time.Milliseconds}";
+        =>
+                $"info currmovenumber {moveNumber} currmove {move} nodes {visitedNodes} time {time.Milliseconds}";
 
     public string Score(int value, int mateInMaxPly, int valueMate)
         => Math.Abs(value) >= mateInMaxPly
-            ? $"mate {(value > 0 ? valueMate - value + 1 : -valueMate - value) / 2}"
-            : $"cp {ToCenti(value)}";
+                ? $"mate {(value > 0 ? valueMate - value + 1 : -valueMate - value) / 2}"
+                : $"cp {ToCenti(value)}";
 
     public string ScoreCp(int value)
         => $"info score cp {ToCenti(value)}";
@@ -141,26 +179,27 @@ public class Uci : IUci
         => $"info depth {depth}";
 
     public string Pv(
-        int count,
-        int score,
-        int depth,
-        int selectiveDepth,
-        int alpha,
-        int beta,
-        in TimeSpan time,
-        IEnumerable<Move> pvLine,
-        in ulong nodes)
-    {
+            int count,
+            int score,
+            int depth,
+            int selectiveDepth,
+            int alpha,
+            int beta,
+            in TimeSpan time,
+            IEnumerable<Move> pvLine,
+            in ulong nodes) {
         var sb = _pvPool.Get();
 
-        sb.Append($"info multipv {count + 1} depth {depth} seldepth {selectiveDepth} score {score} ");
+        sb.Append(
+                $"info multipv {count + 1} depth {depth} seldepth {selectiveDepth} score {score} ");
 
         if (score >= beta)
             sb.Append("lowerbound ");
         else if (score <= alpha)
             sb.Append("upperbound ");
 
-        sb.Append($"nodes {nodes} nps {Nps(in nodes, in time)} tbhits {Game.Table.Hits} time {time.Milliseconds} ");
+        sb.Append(
+                $"nodes {nodes} nps {Nps(in nodes, in time)} tbhits {Game.Table.Hits} time {time.Milliseconds} ");
         sb.AppendJoin(' ', pvLine);
 
         var result = sb.ToString();
@@ -170,10 +209,9 @@ public class Uci : IUci
 
     public string Fullness(in ulong tbHits, in ulong nodes, in TimeSpan time)
         =>
-            $"info hashfull {Game.Table.Fullness()} tbhits {tbHits} nodes {nodes} time {time.Milliseconds} nps {Nps(in nodes, in time)}";
+                $"info hashfull {Game.Table.Fullness()} tbhits {tbHits} nodes {nodes} time {time.Milliseconds} nps {Nps(in nodes, in time)}";
 
-    public string MoveToString(Move m, ChessMode chessMode = ChessMode.Normal)
-    {
+    public string MoveToString(Move m, ChessMode chessMode = ChessMode.Normal) {
         if (m.IsNullMove())
             return "(none)";
 
@@ -201,16 +239,15 @@ public class Uci : IUci
     /// and in the format defined by the UCI protocol.
     /// </summary>
     /// <returns>the current UCI options as string</returns>
-    public new string ToString()
-    {
+    public new string ToString() {
         var list = new List<IOption>(O.Values);
         list.Sort(OptionComparer);
         var sb = _pvPool.Get();
 
-        foreach (var opt in CollectionsMarshal.AsSpan(list))
-        {
+        foreach (var opt in CollectionsMarshal.AsSpan(list)) {
             sb.AppendLine();
-            sb.Append("option name ").Append(opt.Name).Append(" type ").Append(OptionTypeStrings[(int)opt.Type]);
+            sb.Append("option name ").Append(opt.Name).Append(" type ")
+                    .Append(OptionTypeStrings[(int)opt.Type]);
             if (opt.Type != UciOptionType.Button)
                 sb.Append(" default ").Append(opt.DefaultValue);
 

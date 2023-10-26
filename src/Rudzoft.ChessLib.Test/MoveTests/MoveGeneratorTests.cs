@@ -51,4 +51,21 @@ public sealed class MoveGeneratorTests
 
         Assert.Equal(expectedMoves, actualMoves);
     }
+    [Fact]
+    public void InCheckMoveGeneration2()
+    {
+        const string fen = "2b1kb1r/4n1p1/1pPp3p/5p2/1P6/4q3/P2NKP2/1n3B1R w k - 0 47";
+        const int expectedMoves = 3;
+
+        var g = GameFactory.Create(fen);
+
+        // make sure black is in check
+        Assert.True(g.Pos.InCheck);
+
+        // generate moves for black
+        var mg = g.Pos.GenerateMoves();
+        var actualMoves = mg.Length;
+
+        Assert.Equal(expectedMoves, actualMoves);
+    }
 }

@@ -48,6 +48,7 @@ public interface IUci
     ulong Nps(in ulong nodes, in TimeSpan time);
 
     Move MoveFromUci(IPosition pos, ReadOnlySpan<char> uciMove);
+    String MoveToUci(IPosition pos, Move move);
 
     IEnumerable<Move> MovesFromUci(IPosition pos, Stack<State> states, IEnumerable<string> moves);
 

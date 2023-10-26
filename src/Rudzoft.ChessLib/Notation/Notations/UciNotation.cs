@@ -29,13 +29,16 @@ using Rudzoft.ChessLib.Types;
 
 namespace Rudzoft.ChessLib.Notation.Notations;
 
-public sealed class UciNotation : Notation
-{
-    public UciNotation(IPosition pos) : base(pos)
-    {
-    }
+public sealed class UciNotation : Notation {
+    public UciNotation(IPosition pos) : base(pos) {}
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public override string Convert(Move move)
-        => move.ToString();
+    public override string Convert(Move move) {
+        if (move.IsCastleMove()) {
+            var (from, to) = move;
+            return to < from ? "e1c1" : "e1g1";
+        }
+
+        return move.ToString();
+    }
 }
