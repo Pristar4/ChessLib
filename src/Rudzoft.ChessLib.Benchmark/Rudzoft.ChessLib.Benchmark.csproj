@@ -14,6 +14,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Rudzoft.ChessLib.Perft\Rudzoft.ChessLib.Perft.csproj" />
-    <ProjectReference Include="..\Rudzoft.ChessLib\Rudzoft.ChessLib.csproj" />
   </ItemGroup>
 </Project>

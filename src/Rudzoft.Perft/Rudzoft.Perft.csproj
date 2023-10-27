@@ -45,7 +45,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Rudzoft.ChessLib.Perft.Interfaces\Rudzoft.ChessLib.Perft.Interfaces.csproj" />
     <ProjectReference Include="..\Rudzoft.ChessLib.Perft\Rudzoft.ChessLib.Perft.csproj" />
-    <ProjectReference Include="..\Rudzoft.ChessLib\Rudzoft.ChessLib.csproj" />
     <ProjectReference Include="..\Rudzoft.Perft.Framework\Rudzoft.Perft.Framework.csproj" />
   </ItemGroup>
 </Project>
