@@ -29,4 +29,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Rudzoft.ChessLib\Rudzoft.ChessLib.csproj" />
+  </ItemGroup>
 </Project>

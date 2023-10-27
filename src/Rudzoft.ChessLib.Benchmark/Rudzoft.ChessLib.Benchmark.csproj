@@ -13,6 +13,7 @@
     <PackageReference Include="System.Runtime" Version="4.3.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Rudzoft.ChessLib.Perft.Interfaces\Rudzoft.ChessLib.Perft.Interfaces.csproj" />
     <ProjectReference Include="..\Rudzoft.ChessLib.Perft\Rudzoft.ChessLib.Perft.csproj" />
   </ItemGroup>
 </Project>

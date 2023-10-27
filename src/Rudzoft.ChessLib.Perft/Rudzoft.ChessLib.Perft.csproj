@@ -4,6 +4,7 @@
     <LangVersion>default</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Rudzoft.ChessLib.Perft.Interfaces.csproj" />
     <ProjectReference Include="..\Rudzoft.ChessLib.Perft.Interfaces\Rudzoft.ChessLib.Perft.Interfaces.csproj" />
   </ItemGroup>
 </Project>
